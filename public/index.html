@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Ícones</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+    .container { max-width: 600px; margin: auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,.08); }
+    h1 { margin-top: 0; }
+    input[type=file] { display: block; margin: 16px 0; }
+    button { background: #3538cd; color: white; border: none; padding: 12px 18px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+    button:hover { background: #1f24a4; }
+    .note { margin-top: 20px; color: #555; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gerador de Ícones</h1>
+    <p>Envie uma imagem PNG ou JPG e baixe um zip com os tamanhos de ícones para Android, iOS e Chrome.</p>
+
+    <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+      <label for="image">Escolha a imagem:</label>
+      <input type="file" id="image" name="image" accept="image/png,image/jpeg" required />
+      <button type="submit">Gerar ícones</button>
+    </form>
+
+    <p class="note">Recomendado usar imagem quadrada de boa resolução para melhores resultados.</p>
+  </div>
+</body>
+</html>
