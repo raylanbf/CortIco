@@ -78,12 +78,7 @@
     }
 
     .drop-zone input[type=file] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
+      display: none;
     }
 
     .drop-icon {
@@ -415,6 +410,7 @@
     reader.readAsDataURL(file);
   }
 
+  dropZone.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
 
   clearBtn.addEventListener('click', () => {
