@@ -68,6 +68,7 @@
 
     /* Drop zone */
     .drop-zone {
+      display: block;
       border: 2px dashed #2e2e3a;
       border-radius: 12px;
       padding: 32px 16px;
@@ -198,14 +199,14 @@
 </div>
 
 <form id="form">
-  <div class="drop-zone" id="dropZone">
+  <label class="drop-zone" id="dropZone" for="fileInput">
     <input type="file" id="fileInput" accept="image/png,image/jpeg" />
     <div class="drop-icon">
       <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
     </div>
     <div class="drop-title">Arraste ou clique para escolher</div>
     <div class="drop-sub">PNG ou JPG — preferencialmente quadrada</div>
-  </div>
+  </label>
 
   <div class="preview-wrap" id="previewWrap">
     <img class="preview-img" id="previewImg" src="" alt="preview" />
@@ -338,7 +339,6 @@
     reader.readAsDataURL(file);
   }
 
-  dropZone.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
 
   clearBtn.addEventListener('click', () => {
