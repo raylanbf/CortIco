@@ -47,7 +47,13 @@
       border-color: #6366f1;
       background: rgba(99,102,241,.06);
     }
-    .drop-zone input[type=file] { display: none; }
+    .drop-zone input[type=file] {
+      opacity: 0;
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
     .drop-icon {
       width: 40px; height: 40px; background: #222230; border-radius: 10px;
       display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;
@@ -156,7 +162,7 @@
     <div class="drop-icon">
       <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
     </div>
-    <div class="drop-title">Arraste ou clique para escolher</div>
+    <div class="drop-title">Arraste, cole (Ctrl+V) ou clique</div>
     <div class="drop-sub">PNG ou JPG — preferencialmente quadrada</div>
   </label>
 
@@ -305,6 +311,11 @@ function setFile(file) {
 }
 
 fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
+
+document.addEventListener('paste', e => {
+  const item = Array.from(e.clipboardData.items).find(i => i.type.startsWith('image/'));
+  if (item) setFile(item.getAsFile());
+});
 
 clearBtn.addEventListener('click', () => {
   fileInput.value = '';
