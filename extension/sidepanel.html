@@ -16,16 +16,12 @@
       overflow-y: auto;
     }
 
-    /* Header */
     .header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 10px;
       margin-bottom: 20px;
     }
-
-    .header-left { display: flex; align-items: center; gap: 10px; }
-
     .logo {
       width: 36px; height: 36px;
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
@@ -34,39 +30,9 @@
       flex-shrink: 0;
     }
     .logo svg { width: 20px; height: 20px; fill: #fff; }
-
     .header-title { font-size: 16px; font-weight: 700; color: #f4f4f8; }
     .header-sub { font-size: 11px; color: #52525e; margin-top: 1px; }
 
-    /* Status dot */
-    .status {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 11px; color: #52525e;
-    }
-    .status-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: #3f3f4a;
-      transition: background .3s;
-    }
-    .status-dot.online { background: #3ddc84; }
-    .status-dot.offline { background: #f87171; }
-
-    /* Offline banner */
-    .banner {
-      display: none;
-      align-items: center; gap: 10px;
-      background: rgba(248,113,113,.08);
-      border: 1px solid rgba(248,113,113,.25);
-      border-radius: 10px;
-      padding: 10px 14px;
-      margin-bottom: 16px;
-      font-size: 12px; color: #fca5a5;
-      line-height: 1.5;
-    }
-    .banner.visible { display: flex; }
-    .banner svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
-
-    /* Drop zone */
     .drop-zone {
       display: block;
       border: 2px dashed #2e2e3a;
@@ -75,16 +41,13 @@
       text-align: center;
       cursor: pointer;
       transition: border-color .2s, background .2s;
-      position: relative;
       background: #13131a;
     }
     .drop-zone:hover, .drop-zone.dragover {
       border-color: #6366f1;
       background: rgba(99,102,241,.06);
     }
-    .drop-zone input[type=file] {
-      display: none;
-    }
+    .drop-zone input[type=file] { display: none; }
     .drop-icon {
       width: 40px; height: 40px; background: #222230; border-radius: 10px;
       display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;
@@ -93,7 +56,6 @@
     .drop-title { font-size: 13px; font-weight: 600; color: #c4c4cc; }
     .drop-sub { margin-top: 3px; font-size: 11px; color: #52525e; }
 
-    /* Preview */
     .preview-wrap {
       display: none; align-items: center; gap: 12px;
       background: #13131a; border: 1px solid #2e2e3a;
@@ -111,7 +73,6 @@
     .preview-clear:hover { color: #f87171; }
     .preview-clear svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
 
-    /* Platforms */
     .platforms {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 8px; margin-top: 16px;
@@ -137,7 +98,6 @@
     .platform-label { font-size: 11px; font-weight: 600; color: #a0a0b0; }
     .platform-count { font-size: 10px; color: #52525e; margin-top: 1px; }
 
-    /* Button */
     .btn {
       display: flex; align-items: center; justify-content: center; gap: 8px;
       width: 100%; margin-top: 16px; padding: 13px;
@@ -151,16 +111,19 @@
     .btn:disabled { opacity: .4; cursor: not-allowed; }
     .btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-    .spinner {
-      display: none; width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
-      border-radius: 50%; animation: spin .7s linear infinite;
+    .progress-bar-wrap {
+      display: none;
+      margin-top: 16px;
+      background: #13131a;
+      border: 1px solid #2a2a32;
+      border-radius: 10px;
+      padding: 14px 16px;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .btn.loading .btn-icon { display: none; }
-    .btn.loading .spinner { display: block; }
+    .progress-bar-wrap.visible { display: block; }
+    .progress-label { font-size: 12px; color: #a0a0b0; margin-bottom: 8px; display: flex; justify-content: space-between; }
+    .progress-track { height: 4px; background: #2a2a32; border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: 2px; transition: width .15s; width: 0%; }
 
-    /* Toast */
     .toast {
       position: fixed; bottom: 16px; left: 50%;
       transform: translateX(-50%) translateY(10px);
@@ -178,24 +141,13 @@
 <body>
 
 <div class="header">
-  <div class="header-left">
-    <div class="logo">
-      <svg viewBox="0 0 24 24"><path d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
-    </div>
-    <div>
-      <div class="header-title">CortIco</div>
-      <div class="header-sub">Gerador de ícones</div>
-    </div>
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
   </div>
-  <div class="status">
-    <div class="status-dot" id="statusDot"></div>
-    <span id="statusLabel">—</span>
+  <div>
+    <div class="header-title">CortIco</div>
+    <div class="header-sub">Gerador de ícones</div>
   </div>
-</div>
-
-<div class="banner" id="offlineBanner">
-  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-  Servidor não encontrado. Inicie o servidor local com <strong style="margin-left:4px">npm start</strong>.
 </div>
 
 <form id="form">
@@ -224,177 +176,222 @@
       <div class="platform-icon">
         <svg viewBox="0 0 24 24"><path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zm-2.5-1C2.67 17 2 17.67 2 18.5v-9C2 8.67 2.67 8 3.5 8S5 8.67 5 9.5v9c0 .83-.67 1.5-1.5 1.5zm17 0c-.83 0-1.5-.67-1.5-1.5v-9C19 8.67 19.67 8 20.5 8S22 8.67 22 9.5v9c0 .83-.67 1.5-1.5 1.5zM15.53 2.16l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48A5.84 5.84 0 0012 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C7.03 3.07 6 4.51 6 6.22V7h12v-.78c0-1.71-1.03-3.15-2.47-4.06zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/></svg>
       </div>
-      <div>
-        <div class="platform-label">Android</div>
-        <div class="platform-count">11 tamanhos</div>
-      </div>
+      <div><div class="platform-label">Android</div><div class="platform-count">11 tamanhos</div></div>
     </div>
-
     <div class="platform p-ios">
       <div class="platform-icon">
         <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
       </div>
-      <div>
-        <div class="platform-label">iOS</div>
-        <div class="platform-count">13 tamanhos</div>
-      </div>
+      <div><div class="platform-label">iOS</div><div class="platform-count">13 tamanhos</div></div>
     </div>
-
     <div class="platform p-chrome">
       <div class="platform-icon">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="10" fill="none" stroke="#4285f4" stroke-width="2"/><line x1="12" y1="8" x2="21.5" y2="8" stroke="#4285f4" stroke-width="2"/><line x1="12" y1="8" x2="3" y2="20" stroke="#4285f4" stroke-width="2"/><line x1="21" y1="16" x2="3" y2="16" stroke="#4285f4" stroke-width="2"/></svg>
       </div>
-      <div>
-        <div class="platform-label">Chrome</div>
-        <div class="platform-count">4 tamanhos</div>
-      </div>
+      <div><div class="platform-label">Chrome</div><div class="platform-count">4 tamanhos</div></div>
     </div>
-
     <div class="platform p-web">
       <div class="platform-icon">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
       </div>
-      <div>
-        <div class="platform-label">Web / PWA</div>
-        <div class="platform-count">9 tamanhos</div>
-      </div>
+      <div><div class="platform-label">Web / PWA</div><div class="platform-count">9 tamanhos</div></div>
     </div>
   </div>
 
+  <div class="progress-bar-wrap" id="progressWrap">
+    <div class="progress-label">
+      <span id="progressText">Gerando ícones...</span>
+      <span id="progressCount">0 / 37</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
   <button type="submit" class="btn" id="submitBtn" disabled>
-    <div class="spinner"></div>
-    <svg class="btn-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-    <span class="btn-text">Gerar ícones</span>
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    <span id="btnText">Gerar ícones</span>
   </button>
 </form>
 
 <div class="toast" id="toast"></div>
 
+<script src="db.js"></script>
 <script>
-  const SERVER = 'http://localhost:3000';
+const iconSpecs = [
+  { name: 'android/launcher/ic_launcher_48x48.png',   size: 48  },
+  { name: 'android/launcher/ic_launcher_72x72.png',   size: 72  },
+  { name: 'android/launcher/ic_launcher_96x96.png',   size: 96  },
+  { name: 'android/launcher/ic_launcher_144x144.png', size: 144 },
+  { name: 'android/launcher/ic_launcher_192x192.png', size: 192 },
+  { name: 'android/launcher/ic_launcher_512x512.png', size: 512 },
+  { name: 'android/notification/ic_notification_24x24.png', size: 24 },
+  { name: 'android/notification/ic_notification_36x36.png', size: 36 },
+  { name: 'android/notification/ic_notification_48x48.png', size: 48 },
+  { name: 'android/notification/ic_notification_72x72.png', size: 72 },
+  { name: 'android/notification/ic_notification_96x96.png', size: 96 },
+  { name: 'ios/AppIcon_20x20.png',     size: 20   },
+  { name: 'ios/AppIcon_29x29.png',     size: 29   },
+  { name: 'ios/AppIcon_40x40.png',     size: 40   },
+  { name: 'ios/AppIcon_58x58.png',     size: 58   },
+  { name: 'ios/AppIcon_60x60.png',     size: 60   },
+  { name: 'ios/AppIcon_76x76.png',     size: 76   },
+  { name: 'ios/AppIcon_80x80.png',     size: 80   },
+  { name: 'ios/AppIcon_87x87.png',     size: 87   },
+  { name: 'ios/AppIcon_120x120.png',   size: 120  },
+  { name: 'ios/AppIcon_152x152.png',   size: 152  },
+  { name: 'ios/AppIcon_167x167.png',   size: 167  },
+  { name: 'ios/AppIcon_180x180.png',   size: 180  },
+  { name: 'ios/AppIcon_1024x1024.png', size: 1024 },
+  { name: 'chrome/icon_16x16.png',   size: 16  },
+  { name: 'chrome/icon_32x32.png',   size: 32  },
+  { name: 'chrome/icon_48x48.png',   size: 48  },
+  { name: 'chrome/icon_128x128.png', size: 128 },
+  { name: 'web/favicon_16x16.png',            size: 16  },
+  { name: 'web/favicon_32x32.png',            size: 32  },
+  { name: 'web/favicon_64x64.png',            size: 64  },
+  { name: 'web/icon_96x96.png',               size: 96  },
+  { name: 'web/icon_128x128.png',             size: 128 },
+  { name: 'web/apple_touch_icon_180x180.png', size: 180 },
+  { name: 'web/icon_192x192.png',             size: 192 },
+  { name: 'web/icon_256x256.png',             size: 256 },
+  { name: 'web/icon_512x512.png',             size: 512 },
+];
 
-  const dropZone    = document.getElementById('dropZone');
-  const fileInput   = document.getElementById('fileInput');
-  const previewWrap = document.getElementById('previewWrap');
-  const previewImg  = document.getElementById('previewImg');
-  const previewName = document.getElementById('previewName');
-  const previewSize = document.getElementById('previewSize');
-  const clearBtn    = document.getElementById('clearBtn');
-  const submitBtn   = document.getElementById('submitBtn');
-  const form        = document.getElementById('form');
-  const toast       = document.getElementById('toast');
-  const statusDot   = document.getElementById('statusDot');
-  const statusLabel = document.getElementById('statusLabel');
-  const offlineBanner = document.getElementById('offlineBanner');
+const fileInput   = document.getElementById('fileInput');
+const dropZone    = document.getElementById('dropZone');
+const previewWrap = document.getElementById('previewWrap');
+const previewImg  = document.getElementById('previewImg');
+const previewName = document.getElementById('previewName');
+const previewSize = document.getElementById('previewSize');
+const clearBtn    = document.getElementById('clearBtn');
+const submitBtn   = document.getElementById('submitBtn');
+const btnText     = document.getElementById('btnText');
+const progressWrap = document.getElementById('progressWrap');
+const progressText = document.getElementById('progressText');
+const progressCount = document.getElementById('progressCount');
+const progressFill  = document.getElementById('progressFill');
+const form        = document.getElementById('form');
+const toast       = document.getElementById('toast');
 
-  let toastTimer;
-  let serverOnline = false;
+let toastTimer;
 
-  function showToast(msg, isError = false) {
-    clearTimeout(toastTimer);
-    toast.textContent = msg;
-    toast.className = 'toast show' + (isError ? ' error' : '');
-    toastTimer = setTimeout(() => toast.className = 'toast', 3500);
+function showToast(msg, isError = false) {
+  clearTimeout(toastTimer);
+  toast.textContent = msg;
+  toast.className = 'toast show' + (isError ? ' error' : '');
+  toastTimer = setTimeout(() => { toast.className = 'toast'; }, 3500);
+}
+
+function formatBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+  return (b / 1048576).toFixed(1) + ' MB';
+}
+
+function setFile(file) {
+  if (!file) return;
+  if (!['image/png', 'image/jpeg'].includes(file.type)) {
+    showToast('Use uma imagem PNG ou JPG.', true);
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    previewImg.src = e.target.result;
+    previewName.textContent = file.name;
+    previewSize.textContent = formatBytes(file.size);
+    previewWrap.classList.add('visible');
+    submitBtn.disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
+
+clearBtn.addEventListener('click', () => {
+  fileInput.value = '';
+  previewWrap.classList.remove('visible');
+  previewImg.src = '';
+  submitBtn.disabled = true;
+});
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    fileInput.files = dt.files;
+    setFile(file);
+  }
+});
+
+async function generateIcon(imgBitmap, size) {
+  let src = imgBitmap;
+  let sw = imgBitmap.width, sh = imgBitmap.height;
+
+  // Downscale progressively para melhor qualidade
+  while (sw > size * 2 || sh > size * 2) {
+    const nw = Math.max(Math.ceil(sw / 2), size);
+    const nh = Math.max(Math.ceil(sh / 2), size);
+    const tmp = new OffscreenCanvas(nw, nh);
+    tmp.getContext('2d').drawImage(src, 0, 0, nw, nh);
+    src = tmp; sw = nw; sh = nh;
   }
 
-  function formatBytes(b) {
-    if (b < 1024) return b + ' B';
-    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
-    return (b / 1048576).toFixed(1) + ' MB';
+  const canvas = new OffscreenCanvas(size, size);
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  const aspect = sw / sh;
+  let dw, dh, dx = 0, dy = 0;
+  if (aspect >= 1) { dw = size; dh = size / aspect; dy = (size - dh) / 2; }
+  else             { dh = size; dw = size * aspect; dx = (size - dw) / 2; }
+
+  ctx.drawImage(src, dx, dy, dw, dh);
+  const blob = await canvas.convertToBlob({ type: 'image/png' });
+  return new Uint8Array(await blob.arrayBuffer());
+}
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  submitBtn.disabled = true;
+  progressWrap.classList.add('visible');
+  dropZone.style.pointerEvents = 'none';
+
+  try {
+    const imgBitmap = await createImageBitmap(file);
+    const sessionId = crypto.randomUUID();
+    const icons = {};
+    const total = iconSpecs.length;
+
+    for (let i = 0; i < total; i++) {
+      const spec = iconSpecs[i];
+      icons[spec.name] = await generateIcon(imgBitmap, spec.size);
+      const pct = Math.round(((i + 1) / total) * 100);
+      progressFill.style.width = pct + '%';
+      progressCount.textContent = `${i + 1} / ${total}`;
+    }
+
+    await saveIcons(sessionId, icons);
+
+    const url = chrome.runtime.getURL('preview.html') + '?session=' + sessionId;
+    chrome.tabs.create({ url });
+    showToast('Abrindo pré-visualização...');
+  } catch (err) {
+    showToast('Erro: ' + err.message, true);
+  } finally {
+    submitBtn.disabled = false;
+    progressWrap.classList.remove('visible');
+    progressFill.style.width = '0%';
+    progressCount.textContent = '0 / 37';
+    dropZone.style.pointerEvents = '';
   }
-
-  async function checkServer() {
-    try {
-      const res = await fetch(`${SERVER}/ping`);
-      const online = res.ok;
-      serverOnline = online;
-      statusDot.className = 'status-dot ' + (online ? 'online' : 'offline');
-      statusLabel.textContent = online ? 'online' : 'offline';
-      offlineBanner.classList.toggle('visible', !online);
-    } catch {
-      serverOnline = false;
-      statusDot.className = 'status-dot offline';
-      statusLabel.textContent = 'offline';
-      offlineBanner.classList.add('visible');
-    }
-  }
-
-  checkServer();
-  setInterval(checkServer, 15000);
-
-  function setFile(file) {
-    if (!file) return;
-    if (!['image/png', 'image/jpeg'].includes(file.type)) {
-      showToast('Use uma imagem PNG ou JPG.', true);
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = e => {
-      previewImg.src = e.target.result;
-      previewName.textContent = file.name;
-      previewSize.textContent = formatBytes(file.size);
-      previewWrap.classList.add('visible');
-      submitBtn.disabled = false;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
-
-  clearBtn.addEventListener('click', () => {
-    fileInput.value = '';
-    previewWrap.classList.remove('visible');
-    previewImg.src = '';
-    submitBtn.disabled = true;
-  });
-
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-  dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      fileInput.files = dt.files;
-      setFile(file);
-    }
-  });
-
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-    if (!serverOnline) {
-      showToast('Servidor offline. Execute npm start.', true);
-      return;
-    }
-
-    submitBtn.classList.add('loading');
-    submitBtn.disabled = true;
-
-    try {
-      const fd = new FormData();
-      fd.append('image', fileInput.files[0]);
-
-      const res = await fetch(`${SERVER}/upload-session`, { method: 'POST', body: fd });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Erro ao gerar ícones.');
-      }
-
-      const { sessionId } = await res.json();
-      chrome.tabs.create({ url: `${SERVER}/preview/${sessionId}` });
-      showToast('Abrindo pré-visualização...');
-    } catch (err) {
-      const msg = err.name === 'TypeError'
-        ? 'Servidor não encontrado.'
-        : err.message;
-      showToast(msg, true);
-    } finally {
-      submitBtn.classList.remove('loading');
-      submitBtn.disabled = false;
-    }
-  });
+});
 </script>
 </body>
 </html>

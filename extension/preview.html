@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CortIco — Pré-visualização</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f11; color: #e2e2e6; min-height: 100vh; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(15,15,17,.92); backdrop-filter: blur(14px);
+      border-bottom: 1px solid #2a2a32;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 24px; gap: 16px;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-logo {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    }
+    .topbar-logo svg { width: 20px; height: 20px; fill: #fff; }
+    .topbar-title { font-size: 15px; font-weight: 700; color: #f4f4f8; }
+    .topbar-sub { font-size: 12px; color: #72727e; margin-top: 1px; }
+
+    .btn-dl {
+      display: flex; align-items: center; gap: 7px;
+      padding: 9px 18px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; font-size: 13px; font-weight: 600;
+      border: none; border-radius: 10px; cursor: pointer; white-space: nowrap;
+      transition: opacity .2s;
+    }
+    .btn-dl:hover { opacity: .85; }
+    .btn-dl:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-dl svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    main { max-width: 1000px; margin: 0 auto; padding: 36px 24px 80px; display: flex; flex-direction: column; gap: 44px; }
+
+    .loading {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; padding: 80px 0; color: #52525e; font-size: 14px;
+    }
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid #2a2a32; border-top-color: #6366f1;
+      border-radius: 50%; animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg {
+      display: none; padding: 80px 24px; text-align: center;
+      color: #f87171; font-size: 14px;
+    }
+    .error-msg.visible { display: block; }
+
+    .sec-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; background: var(--bg); border-radius: 10px;
+      margin-bottom: 18px;
+    }
+    .sec-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sec-header h2 { font-size: 13px; font-weight: 700; color: var(--c); text-transform: uppercase; letter-spacing: .5px; }
+    .sec-count { margin-left: auto; font-size: 12px; color: #52525e; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 12px; }
+
+    .thumb { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+    .thumb-box {
+      width: 88px; height: 88px;
+      background: #1a1a1f; border: 1px solid #2a2a32; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .thumb-box img { max-width: 80%; max-height: 80%; object-fit: contain; }
+    .thumb-label { font-size: 11px; color: #52525e; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 24 24"><path d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
+    </div>
+    <div>
+      <div class="topbar-title">Pré-visualização</div>
+      <div class="topbar-sub" id="topbarSub">Carregando...</div>
+    </div>
+  </div>
+  <button class="btn-dl" id="btnDownload" disabled>
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Baixar .zip
+  </button>
+</div>
+
+<main id="main">
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    Carregando ícones...
+  </div>
+  <div class="error-msg" id="errorMsg"></div>
+</main>
+
+<script src="db.js"></script>
+<script src="jszip.min.js"></script>
+<script>
+const platformMeta = {
+  android: { label: 'Android', color: '#3ddc84', bg: 'rgba(61,220,132,.1)' },
+  ios:     { label: 'iOS',     color: '#c0c0c8', bg: 'rgba(192,192,200,.06)' },
+  chrome:  { label: 'Chrome',  color: '#4285f4', bg: 'rgba(66,133,244,.1)' },
+  web:     { label: 'Web / PWA', color: '#fbbf24', bg: 'rgba(251,191,36,.08)' },
+};
+
+const iconSpecs = [
+  { name: 'android/launcher/ic_launcher_48x48.png',   size: 48  },
+  { name: 'android/launcher/ic_launcher_72x72.png',   size: 72  },
+  { name: 'android/launcher/ic_launcher_96x96.png',   size: 96  },
+  { name: 'android/launcher/ic_launcher_144x144.png', size: 144 },
+  { name: 'android/launcher/ic_launcher_192x192.png', size: 192 },
+  { name: 'android/launcher/ic_launcher_512x512.png', size: 512 },
+  { name: 'android/notification/ic_notification_24x24.png', size: 24 },
+  { name: 'android/notification/ic_notification_36x36.png', size: 36 },
+  { name: 'android/notification/ic_notification_48x48.png', size: 48 },
+  { name: 'android/notification/ic_notification_72x72.png', size: 72 },
+  { name: 'android/notification/ic_notification_96x96.png', size: 96 },
+  { name: 'ios/AppIcon_20x20.png',     size: 20   },
+  { name: 'ios/AppIcon_29x29.png',     size: 29   },
+  { name: 'ios/AppIcon_40x40.png',     size: 40   },
+  { name: 'ios/AppIcon_58x58.png',     size: 58   },
+  { name: 'ios/AppIcon_60x60.png',     size: 60   },
+  { name: 'ios/AppIcon_76x76.png',     size: 76   },
+  { name: 'ios/AppIcon_80x80.png',     size: 80   },
+  { name: 'ios/AppIcon_87x87.png',     size: 87   },
+  { name: 'ios/AppIcon_120x120.png',   size: 120  },
+  { name: 'ios/AppIcon_152x152.png',   size: 152  },
+  { name: 'ios/AppIcon_167x167.png',   size: 167  },
+  { name: 'ios/AppIcon_180x180.png',   size: 180  },
+  { name: 'ios/AppIcon_1024x1024.png', size: 1024 },
+  { name: 'chrome/icon_16x16.png',   size: 16  },
+  { name: 'chrome/icon_32x32.png',   size: 32  },
+  { name: 'chrome/icon_48x48.png',   size: 48  },
+  { name: 'chrome/icon_128x128.png', size: 128 },
+  { name: 'web/favicon_16x16.png',            size: 16  },
+  { name: 'web/favicon_32x32.png',            size: 32  },
+  { name: 'web/favicon_64x64.png',            size: 64  },
+  { name: 'web/icon_96x96.png',               size: 96  },
+  { name: 'web/icon_128x128.png',             size: 128 },
+  { name: 'web/apple_touch_icon_180x180.png', size: 180 },
+  { name: 'web/icon_192x192.png',             size: 192 },
+  { name: 'web/icon_256x256.png',             size: 256 },
+  { name: 'web/icon_512x512.png',             size: 512 },
+];
+
+const sessionId  = new URLSearchParams(location.search).get('session');
+const main       = document.getElementById('main');
+const loading    = document.getElementById('loading');
+const errorMsg   = document.getElementById('errorMsg');
+const topbarSub  = document.getElementById('topbarSub');
+const btnDownload = document.getElementById('btnDownload');
+
+let iconsData = null;
+
+async function init() {
+  if (!sessionId) {
+    showError('Sessão não encontrada. Gere os ícones novamente pelo painel.');
+    return;
+  }
+
+  try {
+    iconsData = await loadIcons(sessionId);
+    if (!iconsData) {
+      showError('Sessão expirada. Gere os ícones novamente pelo painel.');
+      return;
+    }
+  } catch (err) {
+    showError('Erro ao carregar ícones: ' + err.message);
+    return;
+  }
+
+  loading.remove();
+  topbarSub.textContent = iconSpecs.length + ' ícones gerados com sucesso';
+  btnDownload.disabled = false;
+
+  // Agrupar por plataforma
+  const platforms = {
+    android: { ...platformMeta.android, icons: [] },
+    ios:     { ...platformMeta.ios,     icons: [] },
+    chrome:  { ...platformMeta.chrome,  icons: [] },
+    web:     { ...platformMeta.web,     icons: [] },
+  };
+
+  for (const spec of iconSpecs) {
+    const prefix = spec.name.split('/')[0];
+    if (platforms[prefix]) platforms[prefix].icons.push(spec);
+  }
+
+  // Renderizar seções
+  for (const [, platform] of Object.entries(platforms)) {
+    if (!platform.icons.length) continue;
+
+    const section = document.createElement('section');
+
+    const header = document.createElement('div');
+    header.className = 'sec-header';
+    header.style.cssText = `--c:${platform.color};--bg:${platform.bg}`;
+    header.innerHTML = `
+      <span class="sec-dot" style="background:${platform.color}"></span>
+      <h2>${platform.label}</h2>
+      <span class="sec-count">${platform.icons.length} ícones</span>`;
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    for (const spec of platform.icons) {
+      const data = iconsData[spec.name];
+      if (!data) continue;
+      const blob = new Blob([data], { type: 'image/png' });
+      const url  = URL.createObjectURL(blob);
+
+      const thumb = document.createElement('div');
+      thumb.className = 'thumb';
+      thumb.innerHTML = `
+        <div class="thumb-box"><img src="${url}" loading="lazy" alt="${spec.size}px" /></div>
+        <span class="thumb-label">${spec.size}px</span>`;
+      grid.appendChild(thumb);
+    }
+
+    section.appendChild(grid);
+    main.appendChild(section);
+  }
+}
+
+function showError(msg) {
+  loading.remove();
+  errorMsg.textContent = msg;
+  errorMsg.classList.add('visible');
+}
+
+btnDownload.addEventListener('click', async () => {
+  if (!iconsData) return;
+  btnDownload.disabled = true;
+  btnDownload.textContent = 'Comprimindo...';
+
+  try {
+    const zip = new JSZip();
+    for (const [name, data] of Object.entries(iconsData)) {
+      zip.file(name, data);
+    }
+    const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'icon-pack.zip';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } finally {
+    btnDownload.disabled = false;
+    btnDownload.innerHTML = `<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Baixar .zip`;
+  }
+});
+
+init();
+</script>
+</body>
+</html>
