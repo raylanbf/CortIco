@@ -3,6 +3,10 @@ const platformMeta = {
   ios:     { label: 'iOS',     color: '#c0c0c8', bg: 'rgba(192,192,200,.06)' },
   chrome:  { label: 'Chrome',  color: '#4285f4', bg: 'rgba(66,133,244,.1)' },
   web:     { label: 'Web / PWA', color: '#fbbf24', bg: 'rgba(251,191,36,.08)' },
+  youtube: { label: 'YouTube', color: '#ff3333', bg: 'rgba(255,51,51,.1)' },
+  chrome_store: { label: 'Chrome Web Store', color: '#4285f4', bg: 'rgba(66,133,244,.1)' },
+  play_store: { label: 'Google Play Console', color: '#3ddc84', bg: 'rgba(61,220,132,.1)' },
+  app_store: { label: 'Apple App Store', color: '#a0a0cc', bg: 'rgba(160,160,200,.08)' },
 };
 
 const iconSpecs = [
@@ -45,6 +49,21 @@ const iconSpecs = [
   { name: 'web/icon_512x512.png',             size: 512 },
 ];
 
+const thumbnailSpecs = [
+  { name: 'youtube/thumbnail_1280x720.png', width: 1280, height: 720 },
+  { name: 'chrome_store/small_promo_440x280.png', width: 440, height: 280 },
+  { name: 'chrome_store/large_promo_920x680.png', width: 920, height: 680 },
+  { name: 'chrome_store/marquee_1400x560.png', width: 1400, height: 560 },
+  { name: 'chrome_store/screenshot_1280x800.png', width: 1280, height: 800 },
+  { name: 'play_store/feature_graphic_1024x500.png', width: 1024, height: 500 },
+  { name: 'play_store/screenshot_1080x1920.png', width: 1080, height: 1920 },
+  { name: 'app_store/iphone_67_1290x2796.png', width: 1290, height: 2796 },
+  { name: 'app_store/iphone_65_1242x2688.png', width: 1242, height: 2688 },
+  { name: 'app_store/ipad_pro_2048x2732.png', width: 2048, height: 2732 },
+];
+
+const allSpecsList = [...iconSpecs, ...thumbnailSpecs];
+
 const sessionId  = new URLSearchParams(location.search).get('session');
 const main       = document.getElementById('main');
 const loading    = document.getElementById('loading');
@@ -72,19 +91,16 @@ async function init() {
   }
 
   loading.remove();
-  topbarSub.textContent = iconSpecs.length + ' ícones gerados com sucesso';
+  topbarSub.textContent = allSpecsList.length + ' ícones e thumbnails gerados com sucesso';
   btnDownload.disabled = false;
 
-  // Agrupar por plataforma
-  const platforms = {
-    android: { ...platformMeta.android, icons: [] },
-    ios:     { ...platformMeta.ios,     icons: [] },
-    chrome:  { ...platformMeta.chrome,  icons: [] },
-    web:     { ...platformMeta.web,     icons: [] },
-  };
-
-  for (const spec of iconSpecs) {
+  // Agrupar por plataforma dinamicamente
+  const platforms = {};
+  for (const spec of allSpecsList) {
     const prefix = spec.name.split('/')[0];
+    if (!platforms[prefix] && platformMeta[prefix]) {
+      platforms[prefix] = { ...platformMeta[prefix], icons: [] };
+    }
     if (platforms[prefix]) platforms[prefix].icons.push(spec);
   }
 
@@ -105,6 +121,8 @@ async function init() {
 
     const grid = document.createElement('div');
     grid.className = 'grid';
+    const isThumbnail = platform.icons.some(s => s.width);
+    if (isThumbnail) grid.classList.add('grid--thumb');
 
     for (const spec of platform.icons) {
       const data = iconsData[spec.name];
@@ -114,9 +132,13 @@ async function init() {
 
       const thumb = document.createElement('div');
       thumb.className = 'thumb';
+      const label = spec.size ? `${spec.size}px` : `${spec.width}×${spec.height}`;
+      const ar = spec.width ? (spec.width / spec.height).toFixed(4) : 1;
+      const boxClass = spec.width ? 'thumb-box thumb-box--rect' : 'thumb-box';
+      const arStyle = spec.width ? ` style="--ar:${ar}"` : '';
       thumb.innerHTML = `
-        <div class="thumb-box"><img src="${url}" loading="lazy" alt="${spec.size}px" /></div>
-        <span class="thumb-label">${spec.size}px</span>`;
+        <div class="${boxClass}"${arStyle}><img src="${url}" loading="lazy" alt="${label}" /></div>
+        <span class="thumb-label">${label}</span>`;
       grid.appendChild(thumb);
     }
 

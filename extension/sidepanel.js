@@ -38,6 +38,21 @@ const iconSpecs = [
   { name: 'web/icon_512x512.png',             size: 512 },
 ];
 
+const thumbnailSpecs = [
+  { name: 'youtube/thumbnail_1280x720.png', width: 1280, height: 720 },
+  { name: 'chrome_store/small_promo_440x280.png', width: 440, height: 280 },
+  { name: 'chrome_store/large_promo_920x680.png', width: 920, height: 680 },
+  { name: 'chrome_store/marquee_1400x560.png', width: 1400, height: 560 },
+  { name: 'chrome_store/screenshot_1280x800.png', width: 1280, height: 800 },
+  { name: 'play_store/feature_graphic_1024x500.png', width: 1024, height: 500 },
+  { name: 'play_store/screenshot_1080x1920.png', width: 1080, height: 1920 },
+  { name: 'app_store/iphone_67_1290x2796.png', width: 1290, height: 2796 },
+  { name: 'app_store/iphone_65_1242x2688.png', width: 1242, height: 2688 },
+  { name: 'app_store/ipad_pro_2048x2732.png', width: 2048, height: 2732 },
+];
+
+const allSpecs = [...iconSpecs, ...thumbnailSpecs];
+
 const fileInput   = document.getElementById('fileInput');
 const dropZone    = document.getElementById('dropZone');
 const previewWrap = document.getElementById('previewWrap');
@@ -114,26 +129,27 @@ dropZone.addEventListener('drop', e => {
   }
 });
 
-async function generateIcon(imgBitmap, size) {
+async function generateIcon(imgBitmap, width, height) {
   let src = imgBitmap;
   let sw = imgBitmap.width, sh = imgBitmap.height;
 
   // Downscale progressively para melhor qualidade
-  while (sw > size * 2 || sh > size * 2) {
-    const nw = Math.max(Math.ceil(sw / 2), size);
-    const nh = Math.max(Math.ceil(sh / 2), size);
+  while (sw > width * 2 || sh > height * 2) {
+    const nw = Math.max(Math.ceil(sw / 2), width);
+    const nh = Math.max(Math.ceil(sh / 2), height);
     const tmp = new OffscreenCanvas(nw, nh);
     tmp.getContext('2d').drawImage(src, 0, 0, nw, nh);
     src = tmp; sw = nw; sh = nh;
   }
 
-  const canvas = new OffscreenCanvas(size, size);
+  const canvas = new OffscreenCanvas(width, height);
   const ctx = canvas.getContext('2d', { alpha: true });
 
   const aspect = sw / sh;
+  const targetAspect = width / height;
   let dw, dh, dx = 0, dy = 0;
-  if (aspect >= 1) { dw = size; dh = size / aspect; dy = (size - dh) / 2; }
-  else             { dh = size; dw = size * aspect; dx = (size - dw) / 2; }
+  if (aspect >= targetAspect) { dw = height * aspect; dh = height; dx = (width - dw) / 2; }
+  else                         { dh = width / aspect; dw = width; dy = (height - dh) / 2; }
 
   ctx.drawImage(src, dx, dy, dw, dh);
   const blob = await canvas.convertToBlob({ type: 'image/png' });
@@ -154,11 +170,13 @@ form.addEventListener('submit', async e => {
     const imgBitmap = await createImageBitmap(file);
     const sessionId = crypto.randomUUID();
     const icons = {};
-    const total = iconSpecs.length;
+    const total = allSpecs.length;
 
     for (let i = 0; i < total; i++) {
-      const spec = iconSpecs[i];
-      icons[spec.name] = await generateIcon(imgBitmap, spec.size);
+      const spec = allSpecs[i];
+      const width = spec.width ?? spec.size;
+      const height = spec.height ?? spec.size;
+      icons[spec.name] = await generateIcon(imgBitmap, width, height);
       const pct = Math.round(((i + 1) / total) * 100);
       progressFill.style.width = pct + '%';
       progressCount.textContent = `${i + 1} / ${total}`;
@@ -175,7 +193,7 @@ form.addEventListener('submit', async e => {
     submitBtn.disabled = false;
     progressWrap.classList.remove('visible');
     progressFill.style.width = '0%';
-    progressCount.textContent = '0 / 37';
+    progressCount.textContent = '0 / 47';
     dropZone.style.pointerEvents = '';
   }
 });
